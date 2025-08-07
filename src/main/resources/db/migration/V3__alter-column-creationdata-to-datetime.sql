@@ -1,1 +1,0 @@
-ALTER TABLE topics MODIFY COLUMN creation_data DATETIME;
