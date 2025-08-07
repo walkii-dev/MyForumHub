@@ -1,6 +1,7 @@
 package com.educational.MyForumHub.domain.topic;
 
 
+import com.educational.MyForumHub.domain.answer.Answer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "Topic")
 @Table(name = "topics")
@@ -31,6 +34,9 @@ public class Topic {
     @Column(name = "topic_status")
     @Enumerated(EnumType.STRING)
     private Status topicStatus;
+
+    @OneToMany
+    private List<Answer> answers = new ArrayList<>();
 
     private String author;
 
@@ -65,6 +71,7 @@ public class Topic {
 
     public void close(){
         this.topicStatus = Status.CLOSED;
+        this.lastChange = LocalDateTime.now();
     }
 
 }
