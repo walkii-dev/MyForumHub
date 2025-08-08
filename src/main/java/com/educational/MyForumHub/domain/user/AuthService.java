@@ -14,14 +14,6 @@ public class AuthService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-
-
-
-    public void login (AuthData data){
-
-    }
-
-
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         return userRepository.findByLogin(login);
