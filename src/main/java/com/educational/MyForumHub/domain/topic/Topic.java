@@ -2,6 +2,7 @@ package com.educational.MyForumHub.domain.topic;
 
 
 import com.educational.MyForumHub.domain.answer.Answer;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -35,7 +36,7 @@ public class Topic {
     @Enumerated(EnumType.STRING)
     private Status topicStatus;
 
-    @OneToMany
+    @OneToMany(mappedBy = "topic")
     private List<Answer> answers = new ArrayList<>();
 
     private String author;

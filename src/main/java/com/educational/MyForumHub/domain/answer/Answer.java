@@ -1,8 +1,6 @@
 package com.educational.MyForumHub.domain.answer;
 
-import com.educational.MyForumHub.domain.topic.Status;
 import com.educational.MyForumHub.domain.topic.Topic;
-import com.educational.MyForumHub.domain.topic.TopicUpdateData;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -32,10 +30,11 @@ public class Answer {
 
     private LocalDateTime lastChange;
 
-    private boolean active;
+    private Boolean active;
 
-    public Answer(AnswerCreationData data){
+    public Answer(AnswerCreationData data,Topic topic){
         this.message = data.message();
+        this.topic = topic;
         this.lastChange = LocalDateTime.now();
         this.author = data.author();
         this.active = true;
