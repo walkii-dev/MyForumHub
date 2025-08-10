@@ -1,7 +1,11 @@
 package com.educational.MyForumHub.domain.answer;
 
 import com.educational.MyForumHub.domain.topic.TopicRepository;
+import com.educational.MyForumHub.domain.user.User;
+import com.educational.MyForumHub.domain.user.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,10 +17,17 @@ public class AnswerService {
     @Autowired
     private TopicRepository topicRepository;
 
-    public Answer reply(AnswerCreationData data){
+    @Autowired
+    private UserRepository userRepository;
+
+
+    public Answer reply(AnswerCreationData data, UserDetails loggedUser){
 
         var topic = topicRepository.getReferenceById(data.topicId());
-        var answer = new Answer(data,topic);
+
+        User author = (User) userRepository.findByLogin(loggedUser.getUsername());
+
+        var answer = new Answer(data,topic,author);
 
         answerRepository.save(answer);
         return answer;
@@ -28,5 +39,10 @@ public class AnswerService {
         answerRepository.save(answer);
         return answer;
     }
+
+    public void erase(@Valid DeleteAnswerData data) {
+
+    }
+
 
 }

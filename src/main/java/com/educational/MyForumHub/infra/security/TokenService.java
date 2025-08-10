@@ -15,6 +15,8 @@ import java.time.ZoneOffset;
 @Service
 public class TokenService {
 
+    private final String issuer = "MY_FORUM_HUB_API";
+
     @Value("${myforumhub.security.token.secret}")
     private String secret;
 
@@ -22,7 +24,7 @@ public class TokenService {
         try {
             var algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
-                    .withIssuer("auth0")
+                    .withIssuer(issuer)
                     .withSubject(user.getLogin())
                     .withExpiresAt(tokenExpirationDate())
                     .sign(algorithm);
@@ -39,7 +41,7 @@ public class TokenService {
         try {
             var algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
-                    .withIssuer("auth0")
+                    .withIssuer(issuer)
                     .build()
                     .verify(JwtToken)
                     .getSubject();

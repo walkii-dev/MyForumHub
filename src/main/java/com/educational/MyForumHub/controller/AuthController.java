@@ -1,7 +1,6 @@
 package com.educational.MyForumHub.controller;
 
-import com.educational.MyForumHub.domain.user.AuthData;
-import com.educational.MyForumHub.domain.user.User;
+import com.educational.MyForumHub.domain.user.*;
 import com.educational.MyForumHub.infra.security.JwtTokenData;
 import com.educational.MyForumHub.infra.security.TokenService;
 import jakarta.transaction.Transactional;
@@ -10,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/users")
@@ -23,7 +20,20 @@ public class AuthController {
     private AuthenticationManager authManager;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private AuthService authService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity detail(@PathVariable Long id){
+        var user = userRepository.getReferenceById(id);
+        return ResponseEntity.ok(new UserDetailsData(user));
+    }
+
 
     @PostMapping("/login")
     @Transactional
@@ -34,14 +44,12 @@ public class AuthController {
         return ResponseEntity.ok(new JwtTokenData(JWTtoken));
     }
 
-//    @PostMapping("/signup")
-//    @Transactional
-//    public ResponseEntity signUp(){
-//
-//
-//
-//        return ResponseEntity.created(uri).body(login);
-//    }
-
+    @PostMapping("/signup")
+    @Transactional
+    public ResponseEntity signUp (@RequestBody @Valid UserSignupData data, UriComponentsBuilder uriBuilder) {
+        var user = authService.signUp(data);
+        var uri = uriBuilder.path("/users/{id}").buildAndExpand(user.getId()).toUri();
+        return ResponseEntity.created(uri).body(new UserDetailsData(user));
+    }
 
 }

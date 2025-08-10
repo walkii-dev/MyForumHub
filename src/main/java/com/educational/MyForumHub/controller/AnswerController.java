@@ -3,17 +3,21 @@ package com.educational.MyForumHub.controller;
 import com.educational.MyForumHub.domain.answer.*;
 import com.educational.MyForumHub.domain.topic.TopicListingData;
 import com.educational.MyForumHub.domain.topic.TopicUpdateData;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("answers")
+@SecurityRequirement(name = "bearer-key")
 public class AnswerController {
 
     @Autowired
@@ -24,9 +28,9 @@ public class AnswerController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity create(@RequestBody @Valid AnswerCreationData data, UriComponentsBuilder uriBuilder){
-        var answer = answerService.reply(data);
-        var uri = uriBuilder.path("/topics/{id}").buildAndExpand(answer.getId()).toUri();
+    public ResponseEntity create(@RequestBody @Valid AnswerCreationData data, @AuthenticationPrincipal UserDetails loggedUser, UriComponentsBuilder uriBuilder){
+        var answer = answerService.reply(data,loggedUser);
+        var uri = uriBuilder.path("/answers/{id}").buildAndExpand(answer.getId()).toUri();
         return ResponseEntity.created(uri).body(new AnswerDetailsData(answer));
     }
 
@@ -43,10 +47,10 @@ public class AnswerController {
         return ResponseEntity.ok(page);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @Transactional
-    public ResponseEntity close(@PathVariable Long id){
-        answerRepository.getReferenceById(id).erase();
+    public ResponseEntity close(@RequestBody @Valid DeleteAnswerData data){
+        answerService.erase(data);
         return ResponseEntity.noContent().build();
     }
 

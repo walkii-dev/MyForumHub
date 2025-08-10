@@ -1,21 +1,30 @@
 package com.educational.MyForumHub.controller;
 
 import com.educational.MyForumHub.domain.topic.*;
+import com.educational.MyForumHub.domain.user.User;
+import com.educational.MyForumHub.domain.user.UserRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("topics")
+@SecurityRequirement(name = "bearer-key")
 public class TopicsController {
 
     @Autowired
     private TopicRepository topicRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/{id}")
     public ResponseEntity detail(@PathVariable Long id){
@@ -25,8 +34,16 @@ public class TopicsController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity create(@RequestBody @Valid TopicCreationData data, UriComponentsBuilder uriBuilder){
-        var topic = new Topic(data);
+    public ResponseEntity create(@RequestBody @Valid TopicCreationData data,
+                                 @AuthenticationPrincipal UserDetails loggedUser,
+                                 UriComponentsBuilder uriBuilder){
+
+        var author = (User) userRepository.findByLogin(loggedUser.getUsername());
+
+        System.out.println(author);
+
+        var topic = new Topic(data,author);
+
         topicRepository.save(topic);
 
         var uri = uriBuilder.path("/topics/{id}").buildAndExpand(topic.getId()).toUri();

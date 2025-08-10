@@ -1,11 +1,13 @@
 package com.educational.MyForumHub.domain.answer;
 
 import com.educational.MyForumHub.domain.topic.Topic;
+import com.educational.MyForumHub.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 
@@ -26,17 +28,19 @@ public class Answer {
     @JoinColumn(name = "topic_id")
     private Topic topic;
 
-    private String author;
+    @ManyToOne
+    @JoinColumn(name = "author")
+    private User author;
 
     private LocalDateTime lastChange;
 
     private Boolean active;
 
-    public Answer(AnswerCreationData data,Topic topic){
+    public Answer(AnswerCreationData data, Topic topic, User author){
         this.message = data.message();
         this.topic = topic;
         this.lastChange = LocalDateTime.now();
-        this.author = data.author();
+        this.author = author;
         this.active = true;
     }
 

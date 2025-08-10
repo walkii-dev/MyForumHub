@@ -3,6 +3,9 @@ package com.educational.MyForumHub.domain.topic;
 
 import com.educational.MyForumHub.domain.answer.Answer;
 import com.educational.MyForumHub.domain.answer.AnswerDetailsData;
+import com.educational.MyForumHub.domain.user.User;
+import com.educational.MyForumHub.domain.user.UserDetailsData;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +25,7 @@ public record TopicDetailsData(Long id,
                 topic.getMessage(),
                 topic.getLastChange(),
                 topic.getTopicStatus(),
-                topic.getAuthor(),
+                topic.getAuthor().getUsername(),
                 topic.getCourse(),
                 topic.getAnswers().stream().map(AnswerDetailsData::new).toList());
     }

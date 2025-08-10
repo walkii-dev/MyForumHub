@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,16 +32,26 @@ public class User implements UserDetails {
 
     private String password;
 
-    //private Role role;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     @OneToMany(mappedBy = "author")
     private List<Topic> userTopics = new ArrayList<>();
 
     @OneToMany(mappedBy = "author")
     private List<Answer> userAnswers = new ArrayList<>();
-@Override
+
+    public User(UserSignupData data, PasswordEncoder encryptPassword){
+        this.login = data.login();
+        this.password = encryptPassword.encode(data.password());
+        this.role = UserRole.USER;
+    }
+
+
+
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_"+ role.name()));
     }
 
     @Override

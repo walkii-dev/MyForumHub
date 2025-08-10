@@ -3,11 +3,13 @@ package com.educational.MyForumHub.domain.topic;
 
 import com.educational.MyForumHub.domain.answer.Answer;
 
+import com.educational.MyForumHub.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class Topic {
 
     @Column(unique = true)
     private String title;
+
     @Column(unique = true)
     private String message;
 
@@ -39,16 +42,18 @@ public class Topic {
     @OneToMany(mappedBy = "topic")
     private List<Answer> answers = new ArrayList<>();
 
-    private String author;
+    @ManyToOne
+    @JoinColumn(name = "author")
+    private User author;
 
     private String course;
 
-    public Topic(TopicCreationData data){
+    public Topic(TopicCreationData data, User author){
         this.title= data.title();
         this.message = data.message();
         this.lastChange = LocalDateTime.now();
         this.topicStatus = Status.OPEN;
-        this.author = data.author();
+        this.author = author;
         this.course = data.course();
     }
 
@@ -62,9 +67,6 @@ public class Topic {
 
         this.lastChange = LocalDateTime.now();
 
-        if(data.author() !=null){
-            this.author = data.author();
-        }
         if(data.course() !=null){
             this.course = data.course();
         }
