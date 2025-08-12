@@ -41,6 +41,13 @@ public class AnswerService {
     }
 
     public void erase(@Valid DeleteAnswerData data) {
+        var topic = topicRepository.getReferenceById(data.topicId());
+        var answers = topic.getAnswers();
+        //for each answer in answers list have to be checked. if the answer_id delivered in the param is equal
+        //to one of the answers in the list, just do the erase method.
+//        if (data.id().equals(answers.get().getId())){
+//
+//        }
 
     }
 
